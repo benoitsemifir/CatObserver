@@ -1,23 +1,37 @@
-import logo from './logo.svg';
+import React, {useState, useEffect} from 'react';
 import './App.css';
+import { CatDiv } from './components/CatDiv';
+import CatService from "./service/CatService";
 
 function App() {
+
+  const [cat, setCat] = useState({});
+
+  useEffect(() => {
+    let catSubscription = CatService.CatObs.subscribe(cat => {
+      console.log(cat)
+      setCat(cat)});
+      getCat();
+    return () => {
+      catSubscription.unsubscribe();
+    }
+  }, [])
+
+  const getCat = () => {
+    CatService.getCat()
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <div>
+      <header>
+        <h1>The cat API</h1>
       </header>
+      <main>
+        <CatDiv
+          catImg={cat.url}
+          handleClick={getCat}
+        />
+      </main>
     </div>
   );
 }
